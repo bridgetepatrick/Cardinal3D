@@ -294,9 +294,7 @@ std::optional<Halfedge_Mesh::VertexRef> Halfedge_Mesh::split_edge(Halfedge_Mesh:
             f0->halfedge() = halfedges_[i];
             halfedges_[i]->face() = f0;
             h2->set_neighbors(halfedges_[i], h3, v0, e0, f0);
-            h3->twin() = h2;
-            h3->vertex() = halfedges_[i]->vertex();
-            h3->edge() = e0;
+            h3->set_neighbors(h3->next(), h2, halfedges_[i]->vertex(), e0, h3->face());
             right.push_back(h3);
             left.push_back(h2);
         }
@@ -342,41 +340,12 @@ std::optional<Halfedge_Mesh::VertexRef> Halfedge_Mesh::split_edge(Halfedge_Mesh:
     FaceRef f0 = new_face();
     FaceRef f1 = new_face();
 
-    h4->vertex() = v0;
-    h4->edge() = e0;
-    h4->face() = f0;
-    h4->next() = h1;
-    h4->twin() = h5;
-
-    h5->vertex() = h1->vertex();
-    h5->edge() = e0;
-    h5->face() = h3->face();
-    h5->next() = h6;
-    h5->twin() = h4;
-
-    h6->vertex() = v0;
-    h6->edge() = e1;
-    h6->face() = h3->face();
-    h6->next() = h3->next();
-    h6->twin() = h7;
-
-    h7->vertex() = h0->vertex();
-    h7->edge() = e1;
-    h7->face() = f1;
-    h7->next() = h8;
-    h7->twin() = h6;
-
-    h8->vertex() = v0;
-    h8->edge() = e2;
-    h8->face() = f1;
-    h8->next() = h2;
-    h8->twin() = h9;
-
-    h9->vertex() = h2->vertex();
-    h9->edge() = e2;
-    h9->face() = f0;
-    h9->next() = h4;
-    h9->twin() = h8;
+    h4->set_neighbors(h1, h5, v0, e0, f0);
+    h5->set_neighbors(h6, h4, h1->vertex(), e0, h3->face());
+    h6->set_neighbors(h3->next(), h7, v0, e1, h3->face());
+    h7->set_neighbors(h8, h6, h0->vertex(), e1, f1);
+    h8->set_neighbors(h2, h9, v0, e2, f1);
+    h9->set_neighbors(h4, h8, h2->vertex(), e2, f0);
 
     h1->face() = f0;
     h1->next() = h9;
